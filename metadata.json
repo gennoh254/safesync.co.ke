@@ -1,13 +1,6 @@
 {
-<<<<<<< HEAD
   "name": "SafeSync",
   "description": "Real-Time Emergency Response Platform",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-=======
-  "name": "Alertify Sentinel",
-  "description": "Enterprise emergency response console and login interface.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
->>>>>>> f5c5807984db4133d11d89442cd66571f7a199e3
 }
