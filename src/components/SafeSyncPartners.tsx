@@ -4,12 +4,17 @@ const partners = [
   {
     name: 'Red Cross',
     industry: 'Health',
-    image: '/assets/partner1.jpeg',
+    image: '/assets/partner1.png',
   },
   {
     name: 'Safety Council',
     industry: 'Safety',
     image: '/assets/council.png',
+  },
+  {
+    name: 'Fire & Rescue',
+    industry: 'Safety',
+    image: '/assets/images3.png',
   },
 ];
 
