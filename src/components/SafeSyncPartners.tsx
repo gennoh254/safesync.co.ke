@@ -7,7 +7,7 @@ const partners = [
     image: '/assets/partner1.png',
   },
   {
-    name: 'Safety Council',
+    name: 'County Council',
     industry: 'Safety',
     image: '/assets/council.png',
   },
