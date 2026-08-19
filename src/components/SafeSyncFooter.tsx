@@ -94,12 +94,12 @@ export default function SafeSyncFooter() {
               Legal
             </h3>
             <div className="flex flex-col gap-3 text-white/70">
-              {/* <a
+              <a
                 href="/privacy-policy"
                 className="hover:text-white transition"
               >
                 Privacy Policy
-              </a> */}
+              </a>
               <Link
                 to="/terms"
                 className="hover:text-white transition"
@@ -171,7 +171,12 @@ export default function SafeSyncFooter() {
               All Rights Reserved.
             </p>
             <div className="flex gap-6 flex-wrap justify-center">
-              
+              <a
+                href="/privacy-policy"
+                className="hover:text-white transition"
+              >
+                Privacy Policy
+              </a>
               <Link
                 to="/terms"
                 className="hover:text-white transition"
@@ -187,7 +192,6 @@ export default function SafeSyncFooter() {
             </div>
           </div>
           <div className="mt-6 text-center text-white/40 text-xs">
-             • SafeSync Version 1.0.0  •
           </div>
         </div>
       </div>

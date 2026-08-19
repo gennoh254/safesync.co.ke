@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "Company": {
+      "title": "Company",
+      "description": "Onboarded companies",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "contactName": { "type": "string" },
+        "phone": { "type": "string" },
+        "industry": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "active"] },
+        "magicLinkToken": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "contactName", "phone", "industry", "status", "createdAt"]
+    },
+    "Partnership": {
+      "title": "Partnership",
+      "description": "Partnership requests",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string" },
+        "contactName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "description": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["companyName", "contactName", "email", "phone", "description", "status", "createdAt"]
+    },
+    "Responder": {
+      "title": "Responder",
+      "description": "Onboarded responders",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "idNumber": { "type": "string" },
+        "licenseNumber": { "type": "string" },
+        "serviceArea": { "type": "string" },
+        "skills": { "type": "string" },
+        "bankDetails": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "phone", "idNumber", "licenseNumber", "serviceArea", "skills", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/companies/{companyId}": {
+      "schema": { "$ref": "Company" },
+      "description": "Collection of companies"
+    },
+    "/partnerships/{partnershipId}": {
+      "schema": { "$ref": "Partnership" },
+      "description": "Collection of partnership requests"
+    },
+    "/responders/{responderId}": {
+      "schema": { "$ref": "Responder" },
+      "description": "Collection of responders"
+    }
+  }
+}

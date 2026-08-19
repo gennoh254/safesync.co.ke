@@ -3,11 +3,11 @@ import { motion } from 'motion/react';
 import { useState } from 'react';
 
 const industries = [
-  { icon: School, title: 'Schools', desc: 'Rapid response for campus safety.', img: '/assets/school.jpg' },
+  { icon: School, title: 'Schools', desc: 'Rapid response for campus safety.', img: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=400' },
   { icon: Hospital, title: 'Hospitals', desc: 'Critical coordination.', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400' },
   { icon: Building2, title: 'Real Estate', desc: 'Smart security.', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=400' },
   { icon: Building, title: 'Corporates', desc: 'Enterprise-grade safety.', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400' },
-  { icon: Factory, title: 'Factories', desc: 'Occupational safety.', img: '/assets/factories.jpg' },
+  { icon: Factory, title: 'Factories', desc: 'Occupational safety.', img: 'https://images.unsplash.com/photo-1565515020117-6404396860d5?auto=format&fit=crop&q=80&w=400' },
   { icon: Calendar, title: 'Events', desc: 'High-density safety.', img: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=400' },
   { icon: Shield, title: 'Insurers', desc: 'Claims-ready incident data.', img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=400' },
   { icon: Truck, title: 'Logistics', desc: 'Secure fleet & driver safety.', img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400' },
@@ -33,7 +33,7 @@ export default function SafeSyncIndustries() {
               viewport={{ once: true }}
               onMouseEnter={() => setHoveredIdx(i)}
               onMouseLeave={() => setHoveredIdx(null)}
-              className={`relative overflow-hidden rounded-2xl transition-all duration-500 ${
+              className={`relative overflow-hidden rounded-none transition-all duration-500 ${
                 hoveredIdx !== null && hoveredIdx !== i ? 'blur-sm scale-95 opacity-50' : 'scale-100 opacity-100'
               }`}
             >

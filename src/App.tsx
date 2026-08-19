@@ -1,13 +1,18 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { LanguageProvider } from './context/LanguageContext';
-
 import SafeSyncNavbar from './components/SafeSyncNavbar';
 import SafeSyncHero from './components/SafeSyncHero';
 import SafeSyncStats from './components/SafeSyncStats';
+import { motion } from 'motion/react';
+import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
+import RouterScrollToTop from './components/RouterScrollToTop';
+
+import SafeSyncImpact from './components/SafeSyncKnowledgeHub';
 import SafeSyncHowItWorks from './components/SafeSyncHowItWorks';
-import SafeSyncPlatform from './components/SafeSyncPlatform';
-import SafeSyncIndustries from './components/SafeSyncIndustries';
 import PartnerCard from './components/PartnerCard';
 import SafeSyncPartners from './components/SafeSyncPartners';
 import InsurancePackages from './components/InsurancePackages';
@@ -22,14 +27,10 @@ import ScrollToTop from './components/ScrollToTop';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import FloatingContact from './components/FloatingContact';
 import ChatBot from './components/ChatBot';
-import RouterScrollToTop from './components/RouterScrollToTop';
 import DemoPage from './components/DemoPage';
+import CookieConsent from './components/CookieConsent';
 
-const AnimationWrapper = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => (
+const AnimationWrapper = ({ children }: { children: React.ReactNode }) => (
   <motion.div
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -42,79 +43,44 @@ const AnimationWrapper = ({
 
 function HomePage() {
   return (
-    <div className="font-sans text-on-background bg-background transition-colors duration-300">
-      <ScrollProgressBar />
-      <FloatingContact />
-      <ChatBot />
-      <SafeSyncNavbar />
-      <SafeSyncHero />
+      <div className="font-sans text-on-background bg-background transition-colors duration-300">
+        <ScrollProgressBar />
+        <FloatingContact />
+        <ChatBot />
+        <SafeSyncNavbar />
+        <SafeSyncHero />
+        <AnimationWrapper><SafeSyncStats /></AnimationWrapper>
 
-      <AnimationWrapper>
-        <SafeSyncStats />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncHowItWorks />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncPlatform />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncIndustries />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <PartnerCard />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncPartners />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <InsurancePackages />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncAbout />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncFAQ />
-      </AnimationWrapper>
-
-      <AnimationWrapper>
-        <SafeSyncContactForm />
-      </AnimationWrapper>
-
-      <SafeSyncFooter />
-      <ScrollToTop />
-    </div>
+        <AnimationWrapper><SafeSyncHowItWorks /></AnimationWrapper>
+        <AnimationWrapper><SafeSyncImpact /></AnimationWrapper>
+        <AnimationWrapper><PartnerCard /></AnimationWrapper>
+        <AnimationWrapper><SafeSyncPartners /></AnimationWrapper>
+        <AnimationWrapper><InsurancePackages /></AnimationWrapper>
+        <AnimationWrapper><SafeSyncAbout /></AnimationWrapper>
+        <AnimationWrapper><SafeSyncFAQ /></AnimationWrapper>
+        <AnimationWrapper><SafeSyncContactForm /></AnimationWrapper>
+        <SafeSyncFooter />
+        <ScrollToTop />
+        <CookieConsent />
+      </div>
   );
 }
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <BrowserRouter>
-        <RouterScrollToTop />
-
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/demo" element={<DemoPage />} />
-          <Route path="/terms" element={<SafeSyncTerms />} />
-          <Route
-            path="/privacy-policy"
-            element={<SafeSyncPrivacyPolicy />}
-          />
-          <Route
-            path="/cookie-policy"
-            element={<SafeSyncCookiePolicy />}
-          />
-        </Routes>
-      </BrowserRouter>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <BrowserRouter>
+          <RouterScrollToTop />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/demo" element={<DemoPage />} />
+            <Route path="/terms" element={<SafeSyncTerms />} />
+            <Route path="/privacy-policy" element={<SafeSyncPrivacyPolicy />} />
+            <Route path="/cookie-policy" element={<SafeSyncCookiePolicy />} />
+          </Routes>
+        </BrowserRouter>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

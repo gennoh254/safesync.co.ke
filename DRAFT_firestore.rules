@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidCompany(data) {
+        return data.name is string && data.name.size() <= 100 &&
+               data.email is string && data.email.matches('^[^@]+@[^@]+\\.[^@]+$') &&
+               data.industry is string && data.industry.size() <= 50 &&
+               data.status in ['pending', 'active'] &&
+               data.ownerId is string &&
+               data.createdAt is timestamp;
+    }
+
+    function isValidPartnership(data) {
+        return data.companyName is string && data.companyName.size() <= 100 &&
+               data.contactName is string && data.contactName.size() <= 100 &&
+               data.email is string && data.email.matches('^[^@]+@[^@]+\\.[^@]+$') &&
+               data.description is string && data.description.size() <= 1000 &&
+               data.status in ['pending', 'approved', 'rejected'] &&
+               data.createdAt is timestamp;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /companies/{companyId} {
+      allow create: if isSignedIn() && isValidCompany(incoming()) && incoming().createdAt == request.time && incoming().ownerId == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid && isValidCompany(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'magicLinkToken']);
+    }
+
+    match /partnerships/{partnershipId} {
+      allow create: if isValidPartnership(incoming()) && incoming().createdAt == request.time;
+      allow read: if isSignedIn(); // Simplified, should check if user is admin or owner
+      allow update: if isSignedIn() && isValidPartnership(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+    }
+  }
+}

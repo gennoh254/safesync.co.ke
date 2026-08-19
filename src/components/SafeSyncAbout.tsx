@@ -1,22 +1,10 @@
-import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
-import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useSpring } from 'motion/react';
+import { useRef } from 'react';
 
-const missionImages = [
-  "/assets/mission2.jpg",
-  "/assets/disasater.jpg",
-  "/assets/mission3.jpg"
-];
+const missionImage = "/assets/about1.jpg";
 
 export default function SafeSyncAbout() {
   const containerRef = useRef(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveImageIndex((prev) => (prev + 1) % missionImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -55,25 +43,13 @@ We are dedicated to building a safer future for workplaces, schools, and cities 
             {text.split('\n\n')[1]}
           </p>
         </motion.div>
-        <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="rounded-none overflow-hidden shadow-xl"
-        >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={activeImageIndex}
-              src={missionImages[activeImageIndex]}
-              alt="Team"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="w-full h-auto"
-            />
-          </AnimatePresence>
-        </motion.div>
+        <div className="rounded-none overflow-hidden shadow-xl">
+          <img
+            src={missionImage}
+            alt="Mission"
+            className="w-full h-auto"
+          />
+        </div>
       </div>
     </section>
   );

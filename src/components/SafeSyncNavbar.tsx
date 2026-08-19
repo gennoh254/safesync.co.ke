@@ -13,7 +13,6 @@ export default function SafeSyncNavbar() {
         
         <div className="hidden md:flex items-center gap-8 ml-auto">
           {[
-            { name: 'Platform', href: '#platform' },
             { name: 'Industries', href: '#industries' },
             { name: 'Benefits', href: '#benefits' },
             { name: 'About', href: '#about' },
@@ -22,6 +21,12 @@ export default function SafeSyncNavbar() {
               {item.name}
             </a>
           ))}
+          <a 
+            href="#contact" 
+            className="px-5 py-2 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 transition-colors"
+          >
+            Contact Us
+          </a>
         </div>
         
         <div className="flex items-center gap-4">
@@ -34,7 +39,6 @@ export default function SafeSyncNavbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-background border-b border-outline-variant p-6 flex flex-col gap-4">
           {[
-            { name: 'Platform', href: '#platform' },
             { name: 'Industries', href: '#industries' },
             { name: 'Benefits', href: '#benefits' },
             { name: 'About', href: '#about' },
