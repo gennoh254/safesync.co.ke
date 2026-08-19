@@ -31,7 +31,7 @@ export default function SafeSyncHero() {
   return (
     <section className="pt-32 pb-24 px-6 md:px-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-red-900/90 z-0" />
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center bg-fixed z-[-1]" />
+      <div className="absolute inset-0 bg-[url('/assets/mission2.jpg" />
       
       <div className="relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>
