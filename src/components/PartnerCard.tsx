@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function PartnerCard() {
   const images = [
-    'https://images.unsplash.com/photo-1555949963-aa90dcee99e5?auto=format&fit=crop&q=80&w=400',
+    '/assets/mission2.jpg',
     'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400',
     'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400',
     'https://images.unsplash.com/photo-1573164713715-17761005a30e?auto=format&fit=crop&q=80&w=400'
