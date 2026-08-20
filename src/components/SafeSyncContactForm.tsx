@@ -73,7 +73,7 @@ export default function SafeSyncContactForm() {
         {/* Image Section */}
         <div className="lg:w-1/2 w-full rounded-3xl overflow-hidden shadow-2xl">
             <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800"
+                src="/assets/contact.jpeg"
                 alt="Professional inquiry"
                 className="w-full h-full object-cover aspect-[4/3]"
             />
