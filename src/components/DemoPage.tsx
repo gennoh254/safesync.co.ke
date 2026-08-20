@@ -12,7 +12,7 @@ export default function DemoPage() {
           <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
             <iframe 
               className="w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              src="/assets/demo.mp4" 
               title="SafeSync Platform Demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen
