@@ -42,4 +42,4 @@ export default function PartnerCard() {
       {isRegistrationFormOpen && <CompanyRegistrationForm onClose={() => setIsRegistrationFormOpen(false)} />}
     </section>
   );
-}
+};

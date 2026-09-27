@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CompanyRegistrationForm({ onClose }: { onClose: () => void }) {
-  const [formData, setFormData] = useState({ name: '', email: '', contactName: '', phone: '', industry: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', contactName: '', phone: '+254 ', location: '', industry: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -15,8 +15,8 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-    if (!val.startsWith('+254 7')) {
-      val = '+254 7' + val.replace(/^\+254 7/, '');
+    if (!val.startsWith('+254')) {
+      val = '+254 ' + val.replace(/^\+254\s*/, '');
     }
     setFormData({...formData, phone: val});
   };
@@ -55,11 +55,27 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className={`${isDark ? 'bg-slate-900' : 'bg-white'} p-6 sm:p-8 rounded-2xl max-w-lg w-full relative my-auto`}>
-        <button onClick={onClose} className={`absolute top-1 right-1 p-2 z-10 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}>
-          <X size={28} />
+      <div className={`${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} p-6 sm:p-10 rounded-3xl max-w-lg w-full relative my-auto shadow-2xl border`}>
+        <button 
+          onClick={onClose} 
+          className={`absolute top-4 right-4 p-2 z-10 rounded-full transition-colors ${isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
+        >
+          <X size={24} />
         </button>
-        <h2 className={`text-3xl font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-slate-900'}`}>Register Your Company</h2>
+
+        {/* Header with Styled Logo */}
+        <div className="mb-8 flex flex-col items-center justify-center">
+          <a href="#" className="flex items-center justify-center mb-3">
+            <img 
+              src="https://res.cloudinary.com/di15s67o/image/upload/f_auto,q_auto/safesync-logo_ooeqqg" 
+              alt="SafeSync Logo" 
+              className="h-12 sm:h-14 object-contain" 
+            />
+          </a>
+          <h2 className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Register Your Company
+          </h2>
+        </div>
         
         <AnimatePresence mode="wait">
         {isSubmitted ? (
@@ -79,36 +95,94 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 onSubmit={handleSubmit} 
-                className="space-y-4"
+                className="space-y-5"
             >
-                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+                {error && <p className="text-red-500 mb-4 text-center text-sm font-medium">{error}</p>}
                 
-                <div className="space-y-2">
-                    <label className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Company Name</label>
-                    <input required placeholder="Company Name" value={formData.name} className={`w-full min-h-[48px] p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`} onChange={e => setFormData({...formData, name: e.target.value})} />
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Company Name <span className="text-red-500">●</span>
+                    </label>
+                    <input 
+                      required 
+                      placeholder="Company Name" 
+                      value={formData.name} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={e => setFormData({...formData, name: e.target.value})} 
+                    />
                 </div>
                 
-                <div className="space-y-2">
-                    <label className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Email</label>
-                    <input required type="email" placeholder="Email" value={formData.email} className={`w-full min-h-[48px] p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`} onChange={e => setFormData({...formData, email: e.target.value})} />
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Email <span className="text-red-500">●</span>
+                    </label>
+                    <input 
+                      required 
+                      type="email" 
+                      placeholder="Email" 
+                      value={formData.email} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={e => setFormData({...formData, email: e.target.value})} 
+                    />
                 </div>
                 
-                <div className="space-y-2">
-                    <label className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Contact Name</label>
-                    <input required placeholder="Contact Name" value={formData.contactName} className={`w-full min-h-[48px] p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`} onChange={e => setFormData({...formData, contactName: e.target.value})} />
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Contact Name <span className="text-red-500">●</span>
+                    </label>
+                    <input 
+                      required 
+                      placeholder="Contact Name" 
+                      value={formData.contactName} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={e => setFormData({...formData, contactName: e.target.value})} 
+                    />
                 </div>
                 
-                <div className="space-y-2">
-                    <label className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Phone Number</label>
-                    <input required placeholder="+254 7..." value={formData.phone} className={`w-full min-h-[48px] p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`} onChange={handlePhoneChange} />
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Phone Number
+                    </label>
+                    <input 
+                      required 
+                      placeholder="+254 7..." 
+                      value={formData.phone} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={handlePhoneChange} 
+                    />
+                </div>
+
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Location <span className="text-red-500">●</span>
+                    </label>
+                    <input 
+                      required 
+                      placeholder="Location / City / Address" 
+                      value={formData.location} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={e => setFormData({...formData, location: e.target.value})} 
+                    />
                 </div>
                 
-                <div className="space-y-2">
-                    <label className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Industry</label>
-                    <input required placeholder="Industry" value={formData.industry} className={`w-full min-h-[48px] p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`} onChange={e => setFormData({...formData, industry: e.target.value})} />
+                <div className="space-y-1.5">
+                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Industry <span className="text-red-500">●</span>
+                    </label>
+                    <input 
+                      required 
+                      placeholder="Industry" 
+                      value={formData.industry} 
+                      className={`w-full min-h-[48px] px-4 py-3 border rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'}`} 
+                      onChange={e => setFormData({...formData, industry: e.target.value})} 
+                    />
                 </div>
                 
-                <button type="submit" disabled={submitting} className="w-full min-h-[48px] p-4 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-all transform hover:scale-[1.02] shadow-lg shadow-emerald-900/20">
+                <button 
+                  type="submit" 
+                  disabled={submitting} 
+                  className={`w-full min-h-[48px] p-4 font-bold rounded-xl transition-all shadow-lg ${isDark ? 'bg-slate-100 text-slate-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                >
                     {submitting ? 'Registering...' : 'Register →'}
                 </button>
             </motion.form>
