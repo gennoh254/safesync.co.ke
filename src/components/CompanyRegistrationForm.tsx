@@ -6,10 +6,12 @@ import { useTheme } from '../context/ThemeContext';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api.safesync.co.ke';
 
 type OrganizationType = 'client' | 'service_provider';
+type ServiceSubProviderType = 'medical' | 'fire';
 
 interface FormState {
   organizationName: string;
   organizationType: OrganizationType;
+  serviceProviderSubtype: ServiceSubProviderType;
   adminFirstName: string;
   adminLastName: string;
   adminEmail: string;
@@ -20,6 +22,7 @@ interface FormState {
 const INITIAL_STATE: FormState = {
   organizationName: '',
   organizationType: 'client',
+  serviceProviderSubtype: 'medical',
   adminFirstName: '',
   adminLastName: '',
   adminEmail: '',
@@ -55,6 +58,9 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
         body: JSON.stringify({
           organization_name: formData.organizationName,
           organization_type: formData.organizationType,
+          ...(formData.organizationType === 'service_provider' && {
+            service_provider_subtype: formData.serviceProviderSubtype,
+          }),
           phone: formData.phone,
           address: formData.address,
           admin_first_name: formData.adminFirstName,
@@ -178,6 +184,47 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                   ))}
                 </div>
               </div>
+
+              {/* Conditional Sub-type field for Service Providers */}
+              <AnimatePresence>
+                {formData.organizationType === 'service_provider' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-1.5 overflow-hidden"
+                  >
+                    <label className={labelClass}>
+                      Service Category <span className="text-red-500">●</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(
+                        [
+                          { value: 'medical', label: 'Medical Service Provider' },
+                          { value: 'fire', label: 'Fire Service Provider' },
+                        ] as const
+                      ).map((subOpt) => (
+                        <button
+                          type="button"
+                          key={subOpt.value}
+                          onClick={() => setFormData((prev) => ({ ...prev, serviceProviderSubtype: subOpt.value }))}
+                          className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
+                            formData.serviceProviderSubtype === subOpt.value
+                              ? isDark
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : 'bg-emerald-600 text-white border-emerald-600'
+                              : isDark
+                              ? 'bg-slate-800 border-slate-700 text-slate-300'
+                              : 'bg-white border-slate-200 text-slate-600'
+                          }`}
+                        >
+                          {subOpt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="space-y-1.5">
                 <label className={labelClass}>
