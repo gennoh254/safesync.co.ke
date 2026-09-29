@@ -3,7 +3,7 @@ import { X, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api.safesync.co.ke';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 type OrganizationType = 'client' | 'service_provider';
 type ServiceSubProviderType = 'medical' | 'fire';
