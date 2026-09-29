@@ -3,7 +3,9 @@ import { X, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://api.safesync.co.ke/api/v1';
 
 type OrganizationType = 'client' | 'service_provider';
 type ServiceSubProviderType = 'medical' | 'fire';
@@ -59,7 +61,7 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
           organization_name: formData.organizationName,
           organization_type: formData.organizationType,
           ...(formData.organizationType === 'service_provider' && {
-            service_provider_subtype: formData.serviceProviderSubtype,
+            service_provider_type: formData.serviceProviderSubtype,
           }),
           phone: formData.phone,
           address: formData.address,
