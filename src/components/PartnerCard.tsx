@@ -33,7 +33,6 @@ export default function PartnerCard() {
           <p className="text-lg mb-8 opacity-90">Become a critical part of our emergency response infrastructure. Collaborate with command centers, local responders, and hospitals to provide life-saving assistance when it matters most.</p>
           <div className="flex gap-4 flex-wrap">
             <Link to="/demo" className="px-6 py-3 bg-white text-emerald-600 font-bold rounded-lg hover:scale-105 transition-transform">Demo</Link>
-            <button onClick={() => setIsPartnershipFormOpen(true)} className="px-6 py-3 bg-emerald-600 text-white font-bold rounded-lg hover:scale-105 transition-transform">Request Partnership</button>
             <button onClick={() => setIsRegistrationFormOpen(true)} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:scale-105 transition-transform">Register Company</button>
           </div>
         </div>
