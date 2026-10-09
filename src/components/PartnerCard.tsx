@@ -8,10 +8,13 @@ export default function PartnerCard() {
   const [isPartnershipFormOpen, setIsPartnershipFormOpen] = useState(false);
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
   const images = [
-    'https://images.unsplash.com/photo-1555949963-aa90dcee99e5?auto=format&fit=crop&q=80&w=400',
-    'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400',
-    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400',
-    'https://images.unsplash.com/photo-1573164713715-17761005a30e?auto=format&fit=crop&q=80&w=400'
+    '/assets/safes1.jpg',
+    '/assets/safes3.jpg',
+    '/assets/safes2.jpg',
+     '/assets/safes4.jpg',
+
+    
+    
   ];
 
   return (
