@@ -4,12 +4,30 @@ import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../i18n';
 
+
 const steps = [
-  { icon: MousePointerClick, title: 'Trigger', desc: 'Employees trigger an alert instantly via the app or hardware button.' },
-  { icon: MapPin, title: 'GPS Share', desc: 'Automatic precise location sharing for immediate responder dispatch.' },
-  { icon: BellRing, title: 'Notify', desc: 'Operations and nearby responders receive multi-channel alerts.' },
-  { icon: CheckCircle2, title: 'Resolve', desc: 'Real-time tracking of resolution with detailed incident reporting.' },
+  {
+    icon: MousePointerClick,
+    title: 'Get Started with SafeSync',
+    desc: 'Individuals create personal accounts, while organizations onboard their teams, designate administrators, and configure their emergency response structure.',
+  },
+  {
+    icon: MapPin,
+    title: 'Activate an Emergency Alert',
+    desc: 'Individual users and organization members can trigger an emergency alert through the SafeSync app and share their GPS location.',
+  },
+  {
+    icon: BellRing,
+    title: 'Coordinate the Response',
+    desc: 'Relevant response personnel receive alerts and coordinate assistance according to the user’s account type and configured response process.',
+  },
+  {
+    icon: CheckCircle2,
+    title: 'Track and Resolve',
+    desc: 'Follow the response process while relevant administrators and responders manage incidents and record their outcomes.',
+  },
 ];
+
 
 export default function SafeSyncHowItWorks() {
   const [activeProtocol, setActiveProtocol] = useState(0);
@@ -17,10 +35,10 @@ export default function SafeSyncHowItWorks() {
   const t = translations[language];
 
   const protocols = [
-    { title: t.MedicalEmergency, desc: t.MedicalDesc, image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400' },
-    { title: t.FireProtocol, desc: t.FireDesc, image: 'https://images.unsplash.com/photo-1541997194-e3549646b146?auto=format&fit=crop&q=80&w=400' },
-    { title: t.IntrusionAlert, desc: t.IntrusionDesc, image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=400' },
-    { title: t.Flooding, desc: t.FloodingDesc, image: 'https://images.unsplash.com/photo-1518888244237-7756f7093282?auto=format&fit=crop&q=80&w=400' },
+    { title: t.MedicalEmergency, desc: t.MedicalDesc, image: '/assets/medic-emergency.jpg' },
+    { title: t.FireProtocol, desc: t.FireDesc, image: '/assets/fire-protocal' },
+    { title: t.IntrusionAlert, desc: t.IntrusionDesc, image: '/assets/intrudion-alert' },
+    { title: t.Flooding, desc: t.FloodingDesc, image: '/assets/flooding-incident' },
     { title: t.NaturalDisaster, desc: t.NaturalDisasterDesc, image: 'https://images.unsplash.com/photo-1474487548455-7d3539850f15?auto=format&fit=crop&q=80&w=400' },
   ];
 
