@@ -9,7 +9,7 @@ export default function PartnerCard() {
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
   const images = [
     '/assets/safes1.jpg',
-    '/assets/safes3.jpg',
+    '/assets/safes3.jpg', 
     '/assets/safes2.jpg',
      '/assets/safes4.jpg',
 
