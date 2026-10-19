@@ -30,9 +30,9 @@ export default function SafeSyncHero() {
 
   return (
     <section className="pt-32 pb-24 px-6 md:px-32 relative overflow-hidden">
-      <div className="absolute inset-0 bg-red-900/90 z-0" />
-      <div className="absolute inset-0 bg-[url('/assets/mission2.jpg" />
-      
+
+        <div className="absolute inset-0 bg-[url('/assets/mission2.jpg')] bg-cover bg-center bg-no-repeat bg-fixed z-0" />
+        <div className="absolute inset-0 bg-red-900/70 z-0" />
       <div className="relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white font-semibold text-sm mb-6">
