@@ -36,9 +36,9 @@ export default function SafeSyncHowItWorks() {
 
   const protocols = [
     { title: t.MedicalEmergency, desc: t.MedicalDesc, image: '/assets/medic-emergency.jpg' },
-    { title: t.FireProtocol, desc: t.FireDesc, image: '/assets/fire-protocal' },
-    { title: t.IntrusionAlert, desc: t.IntrusionDesc, image: '/assets/intrudion-alert' },
-    { title: t.Flooding, desc: t.FloodingDesc, image: '/assets/flooding-incident' },
+    { title: t.FireProtocol, desc: t.FireDesc, image: '/assets/fire-protocal.jpg' },
+    { title: t.IntrusionAlert, desc: t.IntrusionDesc, image: '/assets/intrudion-alert.jpg' },
+    { title: t.Flooding, desc: t.FloodingDesc, image: '/assets/flooding-incident.jpg' },
     { title: t.NaturalDisaster, desc: t.NaturalDisasterDesc, image: 'https://images.unsplash.com/photo-1474487548455-7d3539850f15?auto=format&fit=crop&q=80&w=400' },
   ];
 
