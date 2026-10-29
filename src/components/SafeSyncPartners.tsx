@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 const partners = [
   {
-    image: "/assets/partner1.png",
+    image: "/assets/redcross.png",
     alt: "Kenya Red Cross",
   },
   {
@@ -17,6 +17,20 @@ const partners = [
     image: "/assets/stp1-logo.png",
     alt: "St Pauls Hospital",
   },
+  {
+    image: "/assets/lifecare-logio.png",
+    alt: "Lifecare Hospital",
+  },
+    {
+    image: "/assets/katani.png",
+    alt: "Katani Hospital",
+  },
+  {
+    image: "/assets/vitalseal.png",
+    alt: "vital seal",
+  },
+
+
 ];
 
 export default function SafeSyncPartners() {
