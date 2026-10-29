@@ -1,6 +1,7 @@
 import { Menu, X, Phone, FileText } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import SafeSyncAnimatedLogo from './SafeSyncAnimatedLogo';
 
 export default function SafeSyncNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,7 +12,6 @@ export default function SafeSyncNavbar() {
     { name: 'Industries', href: isHomePage ? '#industries' : '/#industries', isRouter: false },
     { name: 'Benefits', href: isHomePage ? '#benefits' : '/#benefits', isRouter: false },
     { name: 'About', href: isHomePage ? '#about' : '/#about', isRouter: false },
-    // { name: 'Safety Blog', href: '/blog', isRouter: true },
   ];
 
   return (
@@ -53,9 +53,19 @@ export default function SafeSyncNavbar() {
 
       {/* Main Navbar */}
       <nav className="w-full bg-background/95 backdrop-blur-md shadow-sm border-b border-outline-variant border-t-2 border-t-red-600 transition-colors duration-300">
-        <div className="flex items-center justify-between px-6 md:px-32 h-14">
-          <Link to="/" className="flex items-center">
-            <img src="https://res.cloudinary.com/di15s67o/image/upload/f_auto,q_auto/safesync-logo_ooeqqg" alt="SafeSync Logo" className="h-12" />
+        <div className="flex items-center justify-between px-6 md:px-32 h-16">
+          <Link to="/" className="flex items-center gap-3 group focus:outline-none py-1">
+            <SafeSyncAnimatedLogo className="w-10 h-10 md:w-11 md:h-11" />
+            <div className="flex flex-col select-none">
+              <div className="flex items-center tracking-tight font-display font-black text-xl text-slate-900 group-hover:text-red-600 transition-colors leading-none">
+                <span>Safe</span>
+                <span className="text-red-600">Sync</span>
+                <span className="ml-1.5 inline-block w-1.5 h-1.5 bg-red-600 rounded-full animate-ping" />
+              </div>
+              {/* <span className="text-[9px] font-bold tracking-widest text-slate-500 uppercase mt-1 leading-none">
+                Emergency Response
+              </span> */}
+            </div>
           </Link>
           
           <div className="hidden md:flex items-center gap-8 ml-auto">
