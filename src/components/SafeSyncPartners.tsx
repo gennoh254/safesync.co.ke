@@ -1,3 +1,4 @@
+
 import { motion, useReducedMotion } from "motion/react";
 
 const partners = [
@@ -11,106 +12,142 @@ const partners = [
   },
   {
     image: "/assets/images3.png",
-    alt: "Fire & Rescue",
+    alt: "Fire and Rescue",
   },
   {
     image: "/assets/stp1-logo.png",
-    alt: "St Pauls Hospital",
+    alt: "St Paul's Hospital",
   },
   {
     image: "/assets/lifecare-logio.png",
     alt: "Lifecare Hospital",
   },
-    {
+  {
     image: "/assets/katani.png",
     alt: "Katani Hospital",
   },
   {
     image: "/assets/vitalseal.png",
-    alt: "vital seal",
+    alt: "Vital Seal",
   },
-
-
 ];
 
 export default function SafeSyncPartners() {
   const shouldReduceMotion = useReducedMotion();
 
-  // Duplicate the logos for a seamless marquee.
-  const marqueePartners = [...partners, ...partners];
-
   return (
-    <section className="overflow-hidden bg-background py-16 sm:py-20 md:py-24">
-      <div className="mx-auto max-w-7xl">
-       
-        {/* Heading */}
-            <div className="mx-auto mb-10 max-w-3xl px-6 sm:mb-14">
-              <h2 className="text-center text-3xl font-bold tracking-tight text-primary sm:text-4xl md:text-5xl">
-                Our Partners
-              </h2>
+    <section className="overflow-hidden bg-white py-16 sm:py-20 md:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
 
-              <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-[#800000] sm:w-20" />
+        {/* Section Heading */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mb-10 flex items-center gap-6 sm:mb-12"
+        >
+          <div className="shrink-0">
+            <h2 className="text-2xl font-extrabold uppercase tracking-[0.15em] text-[#0B1F3A] sm:text-3xl md:text-4xl lg:text-[42px]">
+              Our Partners
+            </h2>
 
-              {/* <p className="mx-auto mt-6 max-w-2xl text-center text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-8">
-                SafeSync partners with trusted organizations to strengthen
-                emergency response, disaster preparedness, and public safety.
-                Together, we are building safer, more responsive communities.
-              </p> */}
-            </div>
+            {/* Red Accent */}
+            <div className="mt-3 h-1 w-16 rounded-full bg-[#ED111C] sm:w-20" />
+          </div>
 
-        {/* Continuous partner logo animation */}
+          {/* Horizontal Divider */}
+          <div className="h-px flex-1 bg-[#0B1F3A]/25" />
+        </motion.div>
+
+        {/* Description */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mx-auto mb-14 max-w-2xl text-center sm:mb-16 md:mb-20"
+        >
+          <p className="text-sm leading-7 text-[#0B1F3A]/75 sm:text-base sm:leading-8">
+            We work alongside trusted organizations and service providers
+            to strengthen emergency response, improve safety, and build
+            more resilient communities. Together, we are making every
+            second count.
+          </p>
+        </motion.div>
+
+        {/* Partners Logo Grid */}
         <div
-          className="relative w-full overflow-hidden"
+          className="grid grid-cols-2 md:grid-cols-4"
           aria-label="SafeSync partners"
         >
-          {/* Soft edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-background to-transparent sm:w-16" />
-
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-background to-transparent sm:w-16" />
-
-          <motion.div
-            className="flex w-max items-center"
-            animate={
-              shouldReduceMotion
-                ? { x: "0%" }
-                : { x: ["-50%", "0%"] }
-            }
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : {
-                    x: {
-                      duration: 28,
-                      ease: "linear",
-                      repeat: Infinity,
-                    },
-                  }
-            }
-            style={{
-              willChange: shouldReduceMotion ? "auto" : "transform",
-            }}
-          >
-            {marqueePartners.map((partner, index) => (
-              <div
-                key={`${partner.alt}-${index}`}
-                className="flex h-28 w-36 shrink-0 items-center justify-center px-4 sm:h-32 sm:w-48 sm:px-6 md:w-56"
-              >
+          {partners.map((partner, index) => (
+            <motion.div
+              key={partner.alt}
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, y: 20 }
+              }
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.6,
+                delay: shouldReduceMotion ? 0 : (index % 4) * 0.1,
+                ease: "easeOut",
+              }}
+              className="
+                group flex min-h-[130px] items-center justify-center
+                border-b border-[#0B1F3A]/10
+                px-5 py-8
+                sm:min-h-[150px] sm:px-8 sm:py-10
+                md:min-h-[165px]
+              "
+            >
+              <div className="flex h-full w-full items-center justify-center">
                 <img
                   src={partner.image}
-                  alt={index < partners.length ? partner.alt : ""}
-                  aria-hidden={index >= partners.length}
+                  alt={partner.alt}
                   loading="lazy"
                   draggable={false}
-                  className="max-h-20 w-full max-w-[150px] object-contain opacity-100 transition-transform duration-300 hover:scale-110 sm:max-h-24 sm:max-w-[180px]"
+                  className="
+                    max-h-[65px]
+                    w-full
+                    max-w-[150px]
+                    object-contain
+                    grayscale
+                    opacity-80
+                    transition-all
+                    duration-500
+                    ease-out
+                    group-hover:scale-105
+                    group-hover:grayscale-0
+                    group-hover:opacity-100
+                    sm:max-h-[80px]
+                    sm:max-w-[175px]
+                    md:max-w-[190px]
+                  "
                 />
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
+          ))}
         </div>
 
-        <p className="mt-6 px-6 text-center text-xs font-medium text-on-surface-variant/70 sm:text-sm">
-          Working together for faster, safer emergency response.
-        </p>
+        {/* Closing Message */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-10 text-center sm:mt-14"
+        >
+          <p className="text-xs font-semibold tracking-wide text-[#0B1F3A]/65 sm:text-sm">
+            Building safer communities through collaboration.
+          </p>
+
+          <div className="mx-auto mt-4 h-1 w-10 rounded-full bg-[#ED111C]" />
+        </motion.div>
+
       </div>
     </section>
   );
