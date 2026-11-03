@@ -1,5 +1,5 @@
+
 import { useState } from 'react';
-import { Globe } from 'lucide-react';
 
 export default function CookieConsent() {
   const [show, setShow] = useState(true);
@@ -12,32 +12,52 @@ export default function CookieConsent() {
     setShow(false);
   };
 
-  return (
-    <div className={`fixed bottom-4 right-4 z-50 p-4 ${show ? 'block' : 'hidden'}`}>
-      <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full border border-gray-100 relative">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🍪</span>
-            <h2 className="text-lg font-bold text-gray-900">Manage cookies</h2>
-          </div>
-          <Globe className="text-gray-500" size={20} />
-        </div>
-        
-        <p className="text-xs text-gray-700 mb-6 leading-relaxed">
-          We use cookies to improve your experience. Change settings at any time <a href="/cookie-policy" className="underline text-gray-900 font-medium">here</a>.
-        </p>
+  if (!show) return null;
 
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-4">
-            <a href="/cookie-policy" className="text-emerald-700 font-semibold text-xs hover:underline">
-              More Info
-            </a>
-            <div className="flex items-center gap-3">
-              <button onClick={reject} className="text-gray-500 font-semibold text-xs hover:underline">Deny</button>
-              <button onClick={accept} className="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-full hover:bg-emerald-700 transition-colors">
-                Accept All
-              </button>
-            </div>
+  return (
+    <div className="fixed bottom-5 right-5 z-[9999] w-[calc(100%-40px)] max-w-[325px]">
+      <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#0B1F3A]/95 px-5 py-6 text-center shadow-2xl backdrop-blur-md sm:px-7 sm:py-7">
+
+        {/* Decorative background */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-400/10 blur-2xl" />
+
+        <div className="relative z-10">
+
+          {/* Heading */}
+          <h2 className="mb-3 text-2xl font-extrabold leading-tight text-white">
+            We Respect Your Privacy
+          </h2>
+
+          {/* Description */}
+          <p className="mb-4 text-sm font-medium leading-6 text-white/95">
+            We use cookies to improve your experience on our site and to offer
+            you individualized help. When you select "Accept All," you agree
+            to our usage of cookies.
+          </p>
+
+          {/* Cookie policy */}
+          <a
+            href="/cookie-policy"
+            className="mb-5 inline-block text-sm font-semibold text-sky-400 transition hover:text-sky-300 hover:underline"
+          >
+            View Cookie Policy
+          </a>
+
+          {/* Buttons */}
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={accept}
+              className="rounded-md bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800"
+            >
+              Accept All
+            </button>
+
+            <button
+              onClick={reject}
+              className="rounded-md bg-[#ED111C] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+            >
+              Decline
+            </button>
           </div>
         </div>
       </div>
