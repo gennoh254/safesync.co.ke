@@ -7,13 +7,21 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://api.safesync.co.ke/api/v1';
 
+// Limits mirror the backend schema (app/modules/organizations/schemas.py).
+const MAX_TEXT_LEN = 200;
+const MAX_ADDRESS_LEN = 500;
+const MAX_PHONE_LEN = 30;
+const PHONE_PREFIX = '+254';
+
 type OrganizationType = 'client' | 'service_provider';
 type ServiceSubProviderType = 'medical' | 'fire';
+type OwnershipType = 'public' | 'private';
 
 interface FormState {
   organizationName: string;
   organizationType: OrganizationType;
   serviceProviderSubtype: ServiceSubProviderType;
+  ownershipType: OwnershipType;
   adminFirstName: string;
   adminLastName: string;
   adminEmail: string;
@@ -25,12 +33,34 @@ const INITIAL_STATE: FormState = {
   organizationName: '',
   organizationType: 'client',
   serviceProviderSubtype: 'medical',
+  ownershipType: 'public',
   adminFirstName: '',
   adminLastName: '',
   adminEmail: '',
-  phone: '+254 ',
+  phone: `${PHONE_PREFIX} `,
   address: '',
 };
+
+/**
+ * FastAPI returns `detail` as a string for our own errors (409, 500, ...)
+ * and as an array of { loc, msg } objects for validation errors (422).
+ */
+function extractErrorMessage(body: unknown): string {
+  const fallback = 'Registration failed. Please check your information and try again.';
+  const detail = (body as { detail?: unknown } | null)?.detail;
+
+  if (typeof detail === 'string') return detail;
+
+  if (Array.isArray(detail) && detail.length > 0) {
+    const messages = detail
+      .map((item) => (item as { msg?: unknown })?.msg)
+      .filter((msg): msg is string => typeof msg === 'string')
+      .map((msg) => msg.replace(/^Value error,\s*/i, ''));
+    if (messages.length > 0) return messages.join(' ');
+  }
+
+  return fallback;
+}
 
 export default function CompanyRegistrationForm({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState<FormState>(INITIAL_STATE);
@@ -42,8 +72,8 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-    if (!val.startsWith('+254')) {
-      val = '+254 ' + val.replace(/^\+254\s*/, '');
+    if (!val.startsWith(PHONE_PREFIX)) {
+      val = `${PHONE_PREFIX} ` + val.replace(/^\+?254\s*/, '');
     }
     setFormData((prev) => ({ ...prev, phone: val }));
   };
@@ -53,29 +83,33 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
     setError('');
     setSubmitting(true);
 
+    // A phone containing only the pre-filled country code means "not provided".
+    const phone = formData.phone.trim();
+    const phoneProvided = phone.replace(/\s/g, '') !== PHONE_PREFIX;
+    const address = formData.address.trim();
+
     try {
       const response = await fetch(`${API_BASE_URL}/organizations/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organization_name: formData.organizationName,
+          organization_name: formData.organizationName.trim(),
           organization_type: formData.organizationType,
           ...(formData.organizationType === 'service_provider' && {
             service_provider_type: formData.serviceProviderSubtype,
+            ownership_type: formData.ownershipType,
           }),
-          phone: formData.phone,
-          address: formData.address,
-          admin_first_name: formData.adminFirstName,
-          admin_last_name: formData.adminLastName,
-          admin_email: formData.adminEmail,
+          phone: phoneProvided ? phone : null,
+          address: address || null,
+          admin_first_name: formData.adminFirstName.trim(),
+          admin_last_name: formData.adminLastName.trim(),
+          admin_email: formData.adminEmail.trim(),
         }),
       });
 
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(
-          body?.detail ?? 'Registration failed. Please check your information and try again.'
-        );
+        throw new Error(extractErrorMessage(body));
       }
 
       setIsSubmitted(true);
@@ -224,6 +258,37 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                         </button>
                       ))}
                     </div>
+
+                    <div className="space-y-1.5 pt-3">
+                      <label className={labelClass}>
+                        Ownership <span className="text-red-500">●</span>
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(
+                          [
+                            { value: 'public', label: 'Public / Government' },
+                            { value: 'private', label: 'Private' },
+                          ] as const
+                        ).map((ownOpt) => (
+                          <button
+                            type="button"
+                            key={ownOpt.value}
+                            onClick={() => setFormData((prev) => ({ ...prev, ownershipType: ownOpt.value }))}
+                            className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
+                              formData.ownershipType === ownOpt.value
+                                ? isDark
+                                  ? 'bg-emerald-500 text-white border-emerald-500'
+                                  : 'bg-emerald-600 text-white border-emerald-600'
+                                : isDark
+                                ? 'bg-slate-800 border-slate-700 text-slate-300'
+                                : 'bg-white border-slate-200 text-slate-600'
+                            }`}
+                          >
+                            {ownOpt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -234,6 +299,7 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                 </label>
                 <input
                   required
+                  maxLength={MAX_TEXT_LEN}
                   placeholder="Organization Name"
                   value={formData.organizationName}
                   className={inputClass}
@@ -248,6 +314,7 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                   </label>
                   <input
                     required
+                    maxLength={MAX_TEXT_LEN}
                     placeholder="First Name"
                     value={formData.adminFirstName}
                     className={inputClass}
@@ -260,6 +327,7 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                   </label>
                   <input
                     required
+                    maxLength={MAX_TEXT_LEN}
                     placeholder="Last Name"
                     value={formData.adminLastName}
                     className={inputClass}
@@ -290,6 +358,8 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                   Phone Number
                 </label>
                 <input
+                  type="tel"
+                  maxLength={MAX_PHONE_LEN}
                   placeholder="+254 7..."
                   value={formData.phone}
                   className={inputClass}
@@ -302,6 +372,7 @@ export default function CompanyRegistrationForm({ onClose }: { onClose: () => vo
                   Address
                 </label>
                 <input
+                  maxLength={MAX_ADDRESS_LEN}
                   placeholder="Address / Location"
                   value={formData.address}
                   className={inputClass}
