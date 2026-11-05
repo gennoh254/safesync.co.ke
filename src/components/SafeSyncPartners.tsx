@@ -38,6 +38,14 @@ const partners = [
     image: "/assets/missioncare.jpg",
     alt: "mission care",
   },
+  {
+    image: "/assets/missioncare.jpg",
+    alt: "sucos hospital",
+  },
+  {
+    image: "/assets/succo.png",
+    alt: "sucos hospital",
+  },
 ];
 
 export default function SafeSyncPartners() {
