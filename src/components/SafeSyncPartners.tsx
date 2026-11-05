@@ -30,6 +30,14 @@ const partners = [
     image: "/assets/vitalseal.png",
     alt: "Vital Seal",
   },
+   {
+    image: "/assets/sinai.png",
+    alt: "Sinai Hospital",
+  },
+   {
+    image: "/assets/missioncare.jpg",
+    alt: "mission care",
+  },
 ];
 
 export default function SafeSyncPartners() {
@@ -115,14 +123,11 @@ export default function SafeSyncPartners() {
                     w-full
                     max-w-[150px]
                     object-contain
-                    grayscale
-                    opacity-80
-                    transition-all
-                    duration-500
+                    opacity-100
+                    transition-transform
+                    duration-300
                     ease-out
                     group-hover:scale-105
-                    group-hover:grayscale-0
-                    group-hover:opacity-100
                     sm:max-h-[80px]
                     sm:max-w-[175px]
                     md:max-w-[190px]

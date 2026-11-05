@@ -32,7 +32,7 @@ export default function SafeSyncNavbar() {
               className="hidden md:flex items-center gap-1 text-slate-300 hover:text-white transition-colors"
             >
               <Phone className="w-3 h-3 text-red-400" />
-              <span>Hotline: +254 720 889 352</span>
+              <span>Hotline: +254 746 129 446</span>
             </a>
           </div>
 
