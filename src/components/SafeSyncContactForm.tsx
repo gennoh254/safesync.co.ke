@@ -1,6 +1,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+
 import {
   CheckCircle,
   ArrowUpRight,
@@ -10,9 +11,12 @@ import {
   Instagram,
   Linkedin,
   Music2,
-  Send,
   ShieldCheck,
+  Loader2,
+  Send,
+  AlertCircle,
 } from 'lucide-react';
+
 import { useTheme } from '../context/ThemeContext';
 
 const whatsappContacts = [
@@ -45,6 +49,8 @@ const socialLinks = [
   },
 ];
 
+type SubmissionMethod = 'email' | 'whatsapp' | null;
+
 export default function SafeSyncContactForm() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -59,20 +65,87 @@ export default function SafeSyncContactForm() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submissionMethod, setSubmissionMethod] =
+    useState<SubmissionMethod>(null);
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const isFormValid =
+  const isFormValid = Boolean(
     formData.name.trim() &&
     isValidEmail(formData.email) &&
     formData.subject.trim() &&
-    formData.message.trim();
+    formData.message.trim().length >= 10
+  );
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const updateForm = (field: string, value: string) => {
+    setFormData((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+
+    if (errorMessage) {
+      setErrorMessage('');
+    }
+  };
+
+  // SEND ENQUIRY TO support@safesync.co.ke
+  const handleEmailSubmit = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
-    if (!isFormValid) return;
+    if (!isFormValid || isSending) return;
+
+    setIsSending(true);
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim(),
+          category: formData.category,
+          message: formData.message.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || 'Unable to send your enquiry. Please try again.'
+        );
+      }
+
+      setSubmissionMethod('email');
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Contact form error:', error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.'
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // SEND ENQUIRY THROUGH WHATSAPP
+  const handleWhatsAppSubmit = () => {
+    if (!isFormValid) {
+      setErrorMessage('Please complete all required fields correctly.');
+      return;
+    }
 
     const selectedContact = whatsappContacts.find(
       (contact) => contact.number === formData.whatsapp
@@ -85,23 +158,24 @@ Hello SafeSync Team,
 
 I would like to make an enquiry.
 
-Name: ${formData.name}
-Email: ${formData.email}
+Name: ${formData.name.trim()}
+Email: ${formData.email.trim()}
 Enquiry Type: ${formData.category}
-Subject: ${formData.subject}
+Subject: ${formData.subject.trim()}
 
 Message:
-${formData.message}
+${formData.message.trim()}
 
 I look forward to hearing from your team.
     `.trim();
 
-    const whatsappURL = `https://wa.me/${selectedContact.number}?text=${encodeURIComponent(
-      whatsappMessage
-    )}`;
+    const whatsappURL = `https://wa.me/${
+      selectedContact.number
+    }?text=${encodeURIComponent(whatsappMessage)}`;
 
     window.open(whatsappURL, '_blank', 'noopener,noreferrer');
 
+    setSubmissionMethod('whatsapp');
     setIsSubmitted(true);
   };
 
@@ -114,7 +188,11 @@ I look forward to hearing from your team.
       whatsapp: '254720889352',
       message: '',
     });
+
     setIsSubmitted(false);
+    setIsSending(false);
+    setErrorMessage('');
+    setSubmissionMethod(null);
   };
 
   const inputStyle = `
@@ -224,9 +302,11 @@ I look forward to hearing from your team.
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className={`mb-2 text-sm font-bold ${
-                      isDark ? 'text-white' : 'text-[#0B1F3A]'
-                    }`}>
+                    <p
+                      className={`mb-2 text-sm font-bold ${
+                        isDark ? 'text-white' : 'text-[#0B1F3A]'
+                      }`}
+                    >
                       Call Our Team
                     </p>
 
@@ -251,9 +331,11 @@ I look forward to hearing from your team.
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className={`mb-2 text-sm font-bold ${
-                      isDark ? 'text-white' : 'text-[#0B1F3A]'
-                    }`}>
+                    <p
+                      className={`mb-2 text-sm font-bold ${
+                        isDark ? 'text-white' : 'text-[#0B1F3A]'
+                      }`}
+                    >
                       WhatsApp
                     </p>
 
@@ -281,29 +363,47 @@ I look forward to hearing from your team.
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className={`mb-1 text-sm font-bold ${
-                      isDark ? 'text-white' : 'text-[#0B1F3A]'
-                    }`}>
+                    <p
+                      className={`mb-1 text-sm font-bold ${
+                        isDark ? 'text-white' : 'text-[#0B1F3A]'
+                      }`}
+                    >
                       Email Enquiries
                     </p>
-                    <p className={`text-sm ${
-                      isDark ? 'text-slate-400' : 'text-slate-500'
-                    }`}>
-                      Use our enquiry form to reach our team directly through WhatsApp.
+
+                    <a
+                      href="mailto:support@safesync.co.ke"
+                      className={`text-sm transition-colors hover:text-[#ED111C] ${
+                        isDark ? 'text-slate-400' : 'text-slate-500'
+                      }`}
+                    >
+                      support@safesync.co.ke
+                    </a>
+
+                    <p
+                      className={`mt-2 text-xs ${
+                        isDark ? 'text-slate-500' : 'text-slate-400'
+                      }`}
+                    >
+                      Send your enquiry directly to our support team.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className={`my-8 border-t ${
-                isDark ? 'border-slate-800' : 'border-slate-100'
-              }`} />
+              <div
+                className={`my-8 border-t ${
+                  isDark ? 'border-slate-800' : 'border-slate-100'
+                }`}
+              />
 
               {/* Social Media */}
               <div>
-                <p className={`mb-4 text-sm font-bold ${
-                  isDark ? 'text-white' : 'text-[#0B1F3A]'
-                }`}>
+                <p
+                  className={`mb-4 text-sm font-bold ${
+                    isDark ? 'text-white' : 'text-[#0B1F3A]'
+                  }`}
+                >
                   Follow SafeSync
                 </p>
 
@@ -371,24 +471,29 @@ I look forward to hearing from your team.
             transition={{ duration: 0.7 }}
             className="lg:col-span-7"
           >
-            <div className={`h-full rounded-3xl border p-6 shadow-sm sm:p-9 md:p-10 ${cardStyle}`}>
-
+            <div
+              className={`h-full rounded-3xl border p-6 shadow-sm sm:p-9 md:p-10 ${cardStyle}`}
+            >
               <div className="mb-8">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#ED111C]">
                   Send Us a Message
                 </p>
 
-                <h3 className={`text-2xl font-extrabold sm:text-3xl ${
-                  isDark ? 'text-white' : 'text-[#0B1F3A]'
-                }`}>
+                <h3
+                  className={`text-2xl font-extrabold sm:text-3xl ${
+                    isDark ? 'text-white' : 'text-[#0B1F3A]'
+                  }`}
+                >
                   How Can We Help?
                 </h3>
 
-                <p className={`mt-3 text-sm leading-7 ${
-                  isDark ? 'text-slate-400' : 'text-slate-500'
-                }`}>
-                  Share your enquiry with us. Complete the form and
-                  continue to WhatsApp to send your message.
+                <p
+                  className={`mt-3 text-sm leading-7 ${
+                    isDark ? 'text-slate-400' : 'text-slate-500'
+                  }`}
+                >
+                  Share your enquiry with us. You can send it directly
+                  to our email support team or continue through WhatsApp.
                 </p>
               </div>
 
@@ -407,21 +512,28 @@ I look forward to hearing from your team.
                       <CheckCircle className="h-12 w-12 text-green-500" />
                     </div>
 
-                    <h4 className={`mb-3 text-2xl font-bold ${
-                      isDark ? 'text-white' : 'text-[#0B1F3A]'
-                    }`}>
-                      Your Message Is Ready!
+                    <h4
+                      className={`mb-3 text-2xl font-bold ${
+                        isDark ? 'text-white' : 'text-[#0B1F3A]'
+                      }`}
+                    >
+                      {submissionMethod === 'email'
+                        ? 'Enquiry Submitted!'
+                        : 'Your Message Is Ready!'}
                     </h4>
 
-                    <p className={`mb-7 max-w-sm text-sm leading-7 ${
-                      isDark ? 'text-slate-400' : 'text-slate-600'
-                    }`}>
-                      WhatsApp has been opened with your enquiry.
-                      Please press Send in WhatsApp to deliver your message
-                      to the SafeSync team.
+                    <p
+                      className={`mb-7 max-w-sm text-sm leading-7 ${
+                        isDark ? 'text-slate-400' : 'text-slate-600'
+                      }`}
+                    >
+                      {submissionMethod === 'email'
+                        ? 'Your enquiry has been submitted to our support system. Our team will get back to you using the email address you provided.'
+                        : 'WhatsApp has been opened with your enquiry. Please press Send in WhatsApp to deliver your message to the SafeSync team.'}
                     </p>
 
                     <button
+                      type="button"
                       onClick={resetForm}
                       className="rounded-xl bg-[#ED111C] px-7 py-3 font-bold text-white transition-colors hover:bg-[#C90D16]"
                     >
@@ -434,15 +546,17 @@ I look forward to hearing from your team.
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleEmailSubmit}
                     className="space-y-5"
                   >
                     {/* Name and Email */}
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div>
-                        <label className={`mb-2 block text-sm font-semibold ${
-                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                        }`}>
+                        <label
+                          className={`mb-2 block text-sm font-semibold ${
+                            isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                          }`}
+                        >
                           Full Name *
                         </label>
 
@@ -453,16 +567,18 @@ I look forward to hearing from your team.
                           placeholder="Your full name"
                           value={formData.name}
                           onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
+                            updateForm('name', e.target.value)
                           }
                           className={inputStyle}
                         />
                       </div>
 
                       <div>
-                        <label className={`mb-2 block text-sm font-semibold ${
-                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                        }`}>
+                        <label
+                          className={`mb-2 block text-sm font-semibold ${
+                            isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                          }`}
+                        >
                           Email Address *
                         </label>
 
@@ -473,7 +589,7 @@ I look forward to hearing from your team.
                           placeholder="you@company.com"
                           value={formData.email}
                           onChange={(e) =>
-                            setFormData({ ...formData, email: e.target.value })
+                            updateForm('email', e.target.value)
                           }
                           className={inputStyle}
                         />
@@ -483,16 +599,18 @@ I look forward to hearing from your team.
                     {/* Enquiry Category */}
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div>
-                        <label className={`mb-2 block text-sm font-semibold ${
-                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                        }`}>
+                        <label
+                          className={`mb-2 block text-sm font-semibold ${
+                            isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                          }`}
+                        >
                           Enquiry Type *
                         </label>
 
                         <select
                           value={formData.category}
                           onChange={(e) =>
-                            setFormData({ ...formData, category: e.target.value })
+                            updateForm('category', e.target.value)
                           }
                           className={inputStyle}
                         >
@@ -507,21 +625,26 @@ I look forward to hearing from your team.
                       </div>
 
                       <div>
-                        <label className={`mb-2 block text-sm font-semibold ${
-                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                        }`}>
-                          WhatsApp Recipient *
+                        <label
+                          className={`mb-2 block text-sm font-semibold ${
+                            isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                          }`}
+                        >
+                          WhatsApp Recipient
                         </label>
 
                         <select
                           value={formData.whatsapp}
                           onChange={(e) =>
-                            setFormData({ ...formData, whatsapp: e.target.value })
+                            updateForm('whatsapp', e.target.value)
                           }
                           className={inputStyle}
                         >
                           {whatsappContacts.map((contact) => (
-                            <option key={contact.number} value={contact.number}>
+                            <option
+                              key={contact.number}
+                              value={contact.number}
+                            >
                               {contact.label}
                             </option>
                           ))}
@@ -531,9 +654,11 @@ I look forward to hearing from your team.
 
                     {/* Subject */}
                     <div>
-                      <label className={`mb-2 block text-sm font-semibold ${
-                        isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                      }`}>
+                      <label
+                        className={`mb-2 block text-sm font-semibold ${
+                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                        }`}
+                      >
                         Subject *
                       </label>
 
@@ -543,7 +668,7 @@ I look forward to hearing from your team.
                         placeholder="What would you like to discuss?"
                         value={formData.subject}
                         onChange={(e) =>
-                          setFormData({ ...formData, subject: e.target.value })
+                          updateForm('subject', e.target.value)
                         }
                         className={inputStyle}
                       />
@@ -551,9 +676,11 @@ I look forward to hearing from your team.
 
                     {/* Message */}
                     <div>
-                      <label className={`mb-2 block text-sm font-semibold ${
-                        isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
-                      }`}>
+                      <label
+                        className={`mb-2 block text-sm font-semibold ${
+                          isDark ? 'text-slate-200' : 'text-[#0B1F3A]'
+                        }`}
+                      >
                         Your Message *
                       </label>
 
@@ -564,16 +691,30 @@ I look forward to hearing from your team.
                         placeholder="Tell us how we can help you..."
                         value={formData.message}
                         onChange={(e) =>
-                          setFormData({ ...formData, message: e.target.value })
+                          updateForm('message', e.target.value)
                         }
                         className={`${inputStyle} min-h-[150px] resize-y`}
                       />
                     </div>
 
-                    {/* Submit */}
+                    {/* Error Message */}
+                    {errorMessage && (
+                      <div
+                        role="alert"
+                        className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500"
+                      >
+                        <AlertCircle
+                          size={19}
+                          className="mt-0.5 shrink-0"
+                        />
+                        <p>{errorMessage}</p>
+                      </div>
+                    )}
+
+                    {/* Email Submit Button */}
                     <motion.button
                       type="submit"
-                      disabled={!isFormValid}
+                      disabled={!isFormValid || isSending}
                       whileTap={{ scale: 0.98 }}
                       className="
                         flex min-h-[54px] w-full items-center justify-center gap-3
@@ -584,16 +725,48 @@ I look forward to hearing from your team.
                         disabled:cursor-not-allowed disabled:opacity-40
                       "
                     >
-                      <MessageCircle size={19} />
+                      {isSending ? (
+                        <>
+                          <Loader2 size={20} className="animate-spin" />
+                          Sending Enquiry...
+                        </>
+                      ) : (
+                        <>
+                          <Mail size={19} />
+                          Send Enquiry to SafeSync
+                          <Send size={18} />
+                        </>
+                      )}
+                    </motion.button>
+
+                    {/* WhatsApp Alternative */}
+                    <motion.button
+                      type="button"
+                      onClick={handleWhatsAppSubmit}
+                      disabled={!isFormValid || isSending}
+                      whileTap={{ scale: 0.98 }}
+                      className="
+                        flex min-h-[54px] w-full items-center justify-center gap-3
+                        rounded-xl border border-green-500/30
+                        bg-green-500/10 px-6 py-4
+                        font-bold text-green-600
+                        transition-all duration-300
+                        hover:bg-green-500 hover:text-white
+                        disabled:cursor-not-allowed disabled:opacity-40
+                      "
+                    >
+                      <MessageCircle size={20} />
                       Continue to WhatsApp
                       <ArrowUpRight size={18} />
                     </motion.button>
 
-                    <p className={`flex items-center justify-center gap-2 text-center text-xs ${
-                      isDark ? 'text-slate-500' : 'text-slate-400'
-                    }`}>
+                    <p
+                      className={`flex items-center justify-center gap-2 text-center text-xs ${
+                        isDark ? 'text-slate-500' : 'text-slate-400'
+                      }`}
+                    >
                       <ShieldCheck size={14} />
-                      Your enquiry will be prepared for WhatsApp.
+                      Your information is submitted securely to SafeSync.
                     </p>
                   </motion.form>
                 )}
@@ -612,13 +785,14 @@ I look forward to hearing from your team.
         >
           <div className="mx-auto mb-5 h-1 w-16 rounded-full bg-[#ED111C]" />
 
-          <p className={`text-sm font-semibold tracking-wide ${
-            isDark ? 'text-slate-400' : 'text-slate-500'
-          }`}>
+          <p
+            className={`text-sm font-semibold tracking-wide ${
+              isDark ? 'text-slate-400' : 'text-slate-500'
+            }`}
+          >
             SafeSync Technologies Ltd. — Protect. Alert. Respond.
           </p>
         </motion.div>
-
       </div>
     </section>
   );
