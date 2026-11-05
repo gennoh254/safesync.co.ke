@@ -31,7 +31,7 @@ const partners = [
     alt: "Vital Seal",
   },
    {
-    image: "/assets/sinai.png",
+    image: "/assets/sinai.jpg",
     alt: "Sinai Hospital",
   },
    {
