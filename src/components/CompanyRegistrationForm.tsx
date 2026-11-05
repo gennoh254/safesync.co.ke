@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -8,15 +7,21 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://api.safesync.co.ke/api/v1';
 
+// Limits mirror the backend schema (app/modules/organizations/schemas.py).
+const MAX_TEXT_LEN = 200;
+const MAX_ADDRESS_LEN = 500;
+const MAX_PHONE_LEN = 30;
+const PHONE_PREFIX = '+254';
+
 type OrganizationType = 'client' | 'service_provider';
 type ServiceSubProviderType = 'medical' | 'fire';
-type FireServiceOwnership = 'public' | 'private' | '';
+type OwnershipType = 'public' | 'private';
 
 interface FormState {
   organizationName: string;
   organizationType: OrganizationType;
   serviceProviderSubtype: ServiceSubProviderType;
-  fireServiceOwnership: FireServiceOwnership;
+  ownershipType: OwnershipType;
   adminFirstName: string;
   adminLastName: string;
   adminEmail: string;
@@ -28,105 +33,89 @@ const INITIAL_STATE: FormState = {
   organizationName: '',
   organizationType: 'client',
   serviceProviderSubtype: 'medical',
-  fireServiceOwnership: '',
+  ownershipType: 'public',
   adminFirstName: '',
   adminLastName: '',
   adminEmail: '',
-  phone: '+254 ',
+  phone: `${PHONE_PREFIX} `,
   address: '',
 };
 
-export default function CompanyRegistrationForm({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
+/**
+ * FastAPI returns `detail` as a string for our own errors (409, 500, ...)
+ * and as an array of { loc, msg } objects for validation errors (422).
+ */
+function extractErrorMessage(body: unknown): string {
+  const fallback = 'Registration failed. Please check your information and try again.';
+  const detail = (body as { detail?: unknown } | null)?.detail;
+
+  if (typeof detail === 'string') return detail;
+
+  if (Array.isArray(detail) && detail.length > 0) {
+    const messages = detail
+      .map((item) => (item as { msg?: unknown })?.msg)
+      .filter((msg): msg is string => typeof msg === 'string')
+      .map((msg) => msg.replace(/^Value error,\s*/i, ''));
+    if (messages.length > 0) return messages.join(' ');
+  }
+
+  return fallback;
+}
+
+export default function CompanyRegistrationForm({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState<FormState>(INITIAL_STATE);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  const handlePhoneChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-
-    if (!val.startsWith('+254')) {
-      val = '+254 ' + val.replace(/^\+?254\s*/, '');
+    if (!val.startsWith(PHONE_PREFIX)) {
+      val = `${PHONE_PREFIX} ` + val.replace(/^\+?254\s*/, '');
     }
-
     setFormData((prev) => ({ ...prev, phone: val }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (
-      formData.organizationType === 'service_provider' &&
-      formData.serviceProviderSubtype === 'fire' &&
-      !formData.fireServiceOwnership
-    ) {
-      setError(
-        'Please select Public or Private Fire Service.'
-      );
-      return;
-    }
-
     setSubmitting(true);
 
+    // A phone containing only the pre-filled country code means "not provided".
+    const phone = formData.phone.trim();
+    const phoneProvided = phone.replace(/\s/g, '') !== PHONE_PREFIX;
+    const address = formData.address.trim();
+
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/organizations/register`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            organization_name: formData.organizationName,
-            organization_type: formData.organizationType,
-
-            ...(formData.organizationType === 'service_provider' && {
-              service_provider_type:
-                formData.serviceProviderSubtype,
-
-              ...(formData.serviceProviderSubtype === 'fire' && {
-                fire_service_ownership:
-                  formData.fireServiceOwnership,
-              }),
-            }),
-
-            phone: formData.phone,
-            address: formData.address,
-            admin_first_name: formData.adminFirstName,
-            admin_last_name: formData.adminLastName,
-            admin_email: formData.adminEmail,
+      const response = await fetch(`${API_BASE_URL}/organizations/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          organization_name: formData.organizationName.trim(),
+          organization_type: formData.organizationType,
+          ...(formData.organizationType === 'service_provider' && {
+            service_provider_type: formData.serviceProviderSubtype,
+            ownership_type: formData.ownershipType,
           }),
-        }
-      );
+          phone: phoneProvided ? phone : null,
+          address: address || null,
+          admin_first_name: formData.adminFirstName.trim(),
+          admin_last_name: formData.adminLastName.trim(),
+          admin_email: formData.adminEmail.trim(),
+        }),
+      });
 
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-
-        throw new Error(
-          body?.detail ??
-            'Registration failed. Please check your information and try again.'
-        );
+        throw new Error(extractErrorMessage(body));
       }
 
       setIsSubmitted(true);
     } catch (err) {
       console.error('Error registering organization:', err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to register. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : 'Failed to register. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -137,36 +126,19 @@ export default function CompanyRegistrationForm({
       ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500'
       : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
   }`;
-
   const labelClass = `text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${
     isDark ? 'text-slate-400' : 'text-slate-600'
   }`;
-
-  const getButtonClass = (selected: boolean) => {
-    if (selected) {
-      return isDark
-        ? 'bg-emerald-500 text-white border-emerald-500'
-        : 'bg-emerald-600 text-white border-emerald-600';
-    }
-
-    return isDark
-      ? 'bg-slate-800 border-slate-700 text-slate-300'
-      : 'bg-white border-slate-200 text-slate-600';
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div
         className={`${
-          isDark
-            ? 'bg-slate-900 border-slate-800'
-            : 'bg-white border-slate-100'
+          isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'
         } p-6 sm:p-10 rounded-3xl max-w-lg w-full relative my-auto shadow-2xl border`}
       >
         <button
-          type="button"
           onClick={onClose}
-          aria-label="Close registration form"
           className={`absolute top-4 right-4 p-2 z-10 rounded-full transition-colors ${
             isDark
               ? 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -177,22 +149,14 @@ export default function CompanyRegistrationForm({
         </button>
 
         <div className="mb-8 flex flex-col items-center justify-center">
-          <a
-            href="#"
-            className="flex items-center justify-center mb-3"
-          >
+          <a href="#" className="flex items-center justify-center mb-3">
             <img
               src="https://res.cloudinary.com/di15s67o/image/upload/f_auto,q_auto/safesync-logo_ooeqqg"
               alt="SafeSync Logo"
               className="h-12 sm:h-14 object-contain"
             />
           </a>
-
-          <h2
-            className={`text-2xl font-extrabold tracking-tight ${
-              isDark ? 'text-white' : 'text-slate-900'
-            }`}
-          >
+          <h2 className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
             Register Your Organization
           </h2>
         </div>
@@ -205,22 +169,14 @@ export default function CompanyRegistrationForm({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className={`p-8 rounded-2xl flex flex-col items-center justify-center text-center ${
-                isDark
-                  ? 'bg-emerald-900/20 text-emerald-400'
-                  : 'bg-emerald-50 text-emerald-600'
+                isDark ? 'bg-emerald-900/20 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
               }`}
             >
               <CheckCircle className="w-16 h-16 mb-4" />
-
-              <h3 className="text-2xl font-bold mb-2">
-                You're Onboarded!
-              </h3>
-
+              <h3 className="text-2xl font-bold mb-2">You're Onboarded!</h3>
               <p>
-                Check <strong>{formData.adminEmail}</strong> for
-                confirmation. You can log in to SafeSync anytime
-                with this email — we'll send a verification code
-                to it.
+                Check <strong>{formData.adminEmail}</strong> for confirmation. You can log in to SafeSync
+                anytime with this email — we'll send a verification code to it.
               </p>
             </motion.div>
           ) : (
@@ -232,54 +188,31 @@ export default function CompanyRegistrationForm({
               onSubmit={handleSubmit}
               className="space-y-5"
             >
-              {error && (
-                <p
-                  role="alert"
-                  className="text-red-500 mb-4 text-center text-sm font-medium"
-                >
-                  {error}
-                </p>
-              )}
+              {error && <p className="text-red-500 mb-4 text-center text-sm font-medium">{error}</p>}
 
-              {/* Organization Type */}
               <div className="space-y-1.5">
                 <label className={labelClass}>
-                  Organization Type
-                  <span className="text-red-500">●</span>
+                  Organization Type <span className="text-red-500">●</span>
                 </label>
-
                 <div className="grid grid-cols-2 gap-3">
                   {(
                     [
-                      {
-                        value: 'client',
-                        label: 'Needs emergency services',
-                      },
-                      {
-                        value: 'service_provider',
-                        label: 'Provides emergency services',
-                      },
+                      { value: 'client', label: 'Needs emergency services' },
+                      { value: 'service_provider', label: 'Provides emergency services' },
                     ] as const
                   ).map((opt) => (
                     <button
                       type="button"
                       key={opt.value}
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          organizationType: opt.value,
-                          fireServiceOwnership: '',
-                        }));
-                        setError('');
-                      }}
+                      onClick={() => setFormData((prev) => ({ ...prev, organizationType: opt.value }))}
                       className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
                         formData.organizationType === opt.value
                           ? isDark
                             ? 'bg-slate-100 text-slate-900 border-slate-100'
                             : 'bg-slate-900 text-white border-slate-900'
                           : isDark
-                            ? 'bg-slate-800 border-slate-700 text-slate-300'
-                            : 'bg-white border-slate-200 text-slate-600'
+                          ? 'bg-slate-800 border-slate-700 text-slate-300'
+                          : 'bg-white border-slate-200 text-slate-600'
                       }`}
                     >
                       {opt.label}
@@ -288,234 +221,145 @@ export default function CompanyRegistrationForm({
                 </div>
               </div>
 
-              {/* Service Provider Categories */}
+              {/* Conditional Sub-type field for Service Providers */}
               <AnimatePresence>
                 {formData.organizationType === 'service_provider' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="space-y-4 overflow-hidden"
+                    className="space-y-1.5 overflow-hidden"
                   >
-                    <div className="space-y-1.5">
-                      <label className={labelClass}>
-                        Service Category
-                        <span className="text-red-500">●</span>
-                      </label>
+                    <label className={labelClass}>
+                      Service Category <span className="text-red-500">●</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(
+                        [
+                          { value: 'medical', label: 'Medical Service Provider' },
+                          { value: 'fire', label: 'Fire Service Provider' },
+                        ] as const
+                      ).map((subOpt) => (
+                        <button
+                          type="button"
+                          key={subOpt.value}
+                          onClick={() => setFormData((prev) => ({ ...prev, serviceProviderSubtype: subOpt.value }))}
+                          className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
+                            formData.serviceProviderSubtype === subOpt.value
+                              ? isDark
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : 'bg-emerald-600 text-white border-emerald-600'
+                              : isDark
+                              ? 'bg-slate-800 border-slate-700 text-slate-300'
+                              : 'bg-white border-slate-200 text-slate-600'
+                          }`}
+                        >
+                          {subOpt.label}
+                        </button>
+                      ))}
+                    </div>
 
+                    <div className="space-y-1.5 pt-3">
+                      <label className={labelClass}>
+                        Ownership <span className="text-red-500">●</span>
+                      </label>
                       <div className="grid grid-cols-2 gap-3">
                         {(
                           [
-                            {
-                              value: 'medical',
-                              label: 'Medical Service Provider',
-                            },
-                            {
-                              value: 'fire',
-                              label: 'Fire Service Provider',
-                            },
+                            { value: 'public', label: 'Public / Government' },
+                            { value: 'private', label: 'Private' },
                           ] as const
-                        ).map((subOpt) => (
+                        ).map((ownOpt) => (
                           <button
                             type="button"
-                            key={subOpt.value}
-                            onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                serviceProviderSubtype: subOpt.value,
-                                fireServiceOwnership:
-                                  subOpt.value === 'fire'
-                                    ? prev.fireServiceOwnership
-                                    : '',
-                              }));
-                              setError('');
-                            }}
+                            key={ownOpt.value}
+                            onClick={() => setFormData((prev) => ({ ...prev, ownershipType: ownOpt.value }))}
                             className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
-                              formData.serviceProviderSubtype ===
-                              subOpt.value
-                                ? getButtonClass(true)
-                                : getButtonClass(false)
+                              formData.ownershipType === ownOpt.value
+                                ? isDark
+                                  ? 'bg-emerald-500 text-white border-emerald-500'
+                                  : 'bg-emerald-600 text-white border-emerald-600'
+                                : isDark
+                                ? 'bg-slate-800 border-slate-700 text-slate-300'
+                                : 'bg-white border-slate-200 text-slate-600'
                             }`}
                           >
-                            {subOpt.label}
+                            {ownOpt.label}
                           </button>
                         ))}
                       </div>
                     </div>
-
-                    {/* Public / Private Fire Service */}
-                    <AnimatePresence>
-                      {formData.serviceProviderSubtype === 'fire' && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="space-y-1.5 overflow-hidden"
-                        >
-                          <label className={labelClass}>
-                            Fire Service Provider Type
-                            <span className="text-red-500">●</span>
-                          </label>
-
-                          <div className="grid grid-cols-2 gap-3">
-                            {(
-                              [
-                                {
-                                  value: 'public',
-                                  label: 'Public Fire Service',
-                                },
-                                {
-                                  value: 'private',
-                                  label: 'Private Fire Service',
-                                },
-                              ] as const
-                            ).map((option) => (
-                              <button
-                                type="button"
-                                key={option.value}
-                                aria-pressed={
-                                  formData.fireServiceOwnership ===
-                                  option.value
-                                }
-                                onClick={() => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    fireServiceOwnership: option.value,
-                                  }));
-                                  setError('');
-                                }}
-                                className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition-all ${
-                                  getButtonClass(
-                                    formData.fireServiceOwnership ===
-                                      option.value
-                                  )
-                                }`}
-                              >
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-
-                          <p
-                            className={`text-xs ${
-                              isDark
-                                ? 'text-slate-500'
-                                : 'text-slate-400'
-                            }`}
-                          >
-                            Select whether your fire service is
-                            publicly operated or privately operated.
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Organization Name */}
               <div className="space-y-1.5">
                 <label className={labelClass}>
-                  Organization Name
-                  <span className="text-red-500">●</span>
+                  Organization Name <span className="text-red-500">●</span>
                 </label>
-
                 <input
                   required
+                  maxLength={MAX_TEXT_LEN}
                   placeholder="Organization Name"
                   value={formData.organizationName}
                   className={inputClass}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      organizationName: e.target.value,
-                    }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, organizationName: e.target.value }))}
                 />
               </div>
 
-              {/* Administrator Name */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className={labelClass}>
-                    First Name
-                    <span className="text-red-500">●</span>
+                    First Name <span className="text-red-500">●</span>
                   </label>
-
                   <input
                     required
+                    maxLength={MAX_TEXT_LEN}
                     placeholder="First Name"
                     value={formData.adminFirstName}
                     className={inputClass}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        adminFirstName: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, adminFirstName: e.target.value }))}
                   />
                 </div>
-
                 <div className="space-y-1.5">
                   <label className={labelClass}>
-                    Last Name
-                    <span className="text-red-500">●</span>
+                    Last Name <span className="text-red-500">●</span>
                   </label>
-
                   <input
                     required
+                    maxLength={MAX_TEXT_LEN}
                     placeholder="Last Name"
                     value={formData.adminLastName}
                     className={inputClass}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        adminLastName: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, adminLastName: e.target.value }))}
                   />
                 </div>
               </div>
 
-              {/* Email */}
               <div className="space-y-1.5">
                 <label className={labelClass}>
-                  Email
-                  <span className="text-red-500">●</span>
+                  Email <span className="text-red-500">●</span>
                 </label>
-
                 <input
                   required
                   type="email"
                   placeholder="Email"
                   value={formData.adminEmail}
                   className={inputClass}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      adminEmail: e.target.value,
-                    }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, adminEmail: e.target.value }))}
                 />
-
-                <p
-                  className={`text-xs ${
-                    isDark ? 'text-slate-500' : 'text-slate-400'
-                  }`}
-                >
-                  This becomes the login for your organization's
-                  super admin account.
+                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                  This becomes the login for your organization's super admin account.
                 </p>
               </div>
 
-              {/* Phone */}
               <div className="space-y-1.5">
-                <label className={labelClass}>
+                <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   Phone Number
                 </label>
-
                 <input
                   type="tel"
+                  maxLength={MAX_PHONE_LEN}
                   placeholder="+254 7..."
                   value={formData.phone}
                   className={inputClass}
@@ -523,31 +367,24 @@ export default function CompanyRegistrationForm({
                 />
               </div>
 
-              {/* Address */}
               <div className="space-y-1.5">
-                <label className={labelClass}>Address</label>
-
+                <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Address
+                </label>
                 <input
+                  maxLength={MAX_ADDRESS_LEN}
                   placeholder="Address / Location"
                   value={formData.address}
                   className={inputClass}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))}
                 />
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={submitting}
                 className={`w-full min-h-[48px] p-4 font-bold rounded-xl transition-all shadow-lg disabled:opacity-60 ${
-                  isDark
-                    ? 'bg-slate-100 text-slate-900 hover:bg-white'
-                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                  isDark ? 'bg-slate-100 text-slate-900 hover:bg-white' : 'bg-slate-900 text-white hover:bg-slate-800'
                 }`}
               >
                 {submitting ? 'Registering...' : 'Register →'}
