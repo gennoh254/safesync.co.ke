@@ -46,6 +46,10 @@ const partners = [
     image: "/assets/succo.png",
     alt: "sucos hospital",
   },
+  {
+    image: "/assets/whitecrescent.jpg",
+    alt: "sucos hospital",
+  },
 ];
 
 export default function SafeSyncPartners() {
