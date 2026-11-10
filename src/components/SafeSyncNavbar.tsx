@@ -1,3 +1,4 @@
+
 import { Menu, X, Phone, FileText } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -9,139 +10,138 @@ export default function SafeSyncNavbar() {
   const isHomePage = location.pathname === '/';
 
   const navItems = [
-    { name: 'Industries', href: isHomePage ? '#industries' : '/#industries', isRouter: false },
-    { name: 'Benefits', href: isHomePage ? '#benefits' : '/#benefits', isRouter: false },
-    { name: 'About', href: isHomePage ? '#about' : '/#about', isRouter: false },
+    { name: 'Industries', href: isHomePage ? '#industries' : '/#industries' },
+    { name: 'Benefits', href: isHomePage ? '#benefits' : '/#benefits' },
+    { name: 'About', href: isHomePage ? '#about' : '/#about' },
   ];
 
+  const contactHref = isHomePage ? '#contact' : '/#contact';
+
   return (
-    <header className="fixed top-0 w-full z-50 transition-colors duration-300">
-      {/* Top Header on top of the navbar */}
-      <div className="bg-slate-900 text-slate-200 border-b border-slate-800/80 text-[11px] leading-tight py-1 px-6 md:px-32">
-        <div className="flex items-center justify-between gap-4">
-          {/* Left: 24/7 Hotline & Network Status */}
-          <div className="flex items-center gap-3 sm:gap-5 text-slate-300">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
-              <span className="hidden sm:inline">24/7 Rapid Emergency Response Network</span>
-              <span className="sm:hidden font-semibold">24/7 Response</span>
+    <header className="fixed top-0 left-0 w-full z-50">
+
+      {/* Top Information Bar */}
+      <div className="bg-[#14243A] text-white border-b border-white/10">
+        <div className="flex items-center justify-between gap-4 px-6 md:px-32 py-2 text-[11px]">
+
+          <div className="flex items-center gap-3 sm:gap-5">
+            <span className="flex items-center gap-2 font-semibold tracking-wide">
+              <span className="w-2 h-2 rounded-full bg-[#E11D1C] animate-pulse" />
+              <span className="hidden sm:inline">
+                Emergency Response & Coordination
+              </span>
+              <span className="sm:hidden">24/7 Response</span>
             </span>
-            <span className="hidden md:inline text-slate-700">|</span>
-            <a 
-              href="tel:+254720889352" 
-              className="hidden md:flex items-center gap-1 text-slate-300 hover:text-white transition-colors"
+
+            <span className="hidden md:inline text-white/30">|</span>
+
+            <a
+              href="tel:+254746129446"
+              className="hidden md:flex items-center gap-2 text-white/75 hover:text-white transition-colors"
             >
-              <Phone className="w-3 h-3 text-red-400" />
-              <span>Hotline: +254 746 129 446</span>
+              <Phone className="w-3.5 h-3.5 text-[#E11D1C]" />
+              <span>+254 746 129 446</span>
             </a>
           </div>
 
-          {/* Far Right: Terms & Conditions link */}
-          <div className="flex items-center gap-3 ml-auto">
-            <Link
-              to="/terms"
-              className="flex items-center gap-1 font-medium text-slate-200 hover:text-emerald-400 transition-colors group cursor-pointer"
-            >
-              <FileText className="w-3 h-3 text-amber-400 group-hover:text-amber-300 transition-colors" />
-              <span className="underline decoration-slate-600 underline-offset-2 group-hover:decoration-emerald-400">
-                Terms &amp; Conditions
-              </span>
-            </Link>
-          </div>
+          <Link
+            to="/terms"
+            className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
+            <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
+              Terms &amp; Conditions
+            </span>
+          </Link>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <nav className="w-full bg-background/95 backdrop-blur-md shadow-sm border-b border-outline-variant border-t-2 border-t-red-600 transition-colors duration-300">
-        <div className="flex items-center justify-between px-6 md:px-32 h-16">
-          <Link to="/" className="flex items-center gap-3 group focus:outline-none py-1">
+      {/* Main Navigation */}
+      <nav className="relative bg-white/95 backdrop-blur-xl shadow-sm border-b border-[#14243A]/10">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-[#E11D1C]" />
+
+        <div className="flex items-center justify-between px-6 md:px-32 h-[76px]">
+
+          {/* Brand */}
+          <Link
+            to="/"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center gap-3 group focus:outline-none"
+          >
             <SafeSyncAnimatedLogo className="w-10 h-10 md:w-11 md:h-11" />
+
             <div className="flex flex-col select-none">
-              <div className="flex items-center tracking-tight font-display font-black text-xl text-slate-900 group-hover:text-red-600 transition-colors leading-none">
+              <div className="flex items-center tracking-tight font-display font-black text-xl text-[#14243A] group-hover:text-[#E11D1C] transition-colors leading-none">
                 <span>Safe</span>
-                <span className="text-red-600">Sync</span>
-                <span className="ml-1.5 inline-block w-1.5 h-1.5 bg-red-600 rounded-full animate-ping" />
+                <span className="text-[#E11D1C]">Sync</span>
+                <span className="ml-1.5 w-1.5 h-1.5 bg-[#E11D1C] rounded-full" />
               </div>
-              {/* <span className="text-[9px] font-bold tracking-widest text-slate-500 uppercase mt-1 leading-none">
-                Emergency Response
-              </span> */}
+              <span className="text-[9px] font-bold tracking-[0.18em] text-[#14243A]/60 uppercase mt-1">
+                Technologies
+              </span>
             </div>
           </Link>
-          
-          <div className="hidden md:flex items-center gap-8 ml-auto">
-            {navItems.map(item => (
-              item.isRouter ? (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="text-on-surface-variant font-medium hover:text-secondary transition-colors"
-                >
-                  {item.name}
-                </Link>
-              ) : (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-on-surface-variant font-medium hover:text-secondary transition-colors"
-                >
-                  {item.name}
-                </a>
-              )
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-9 ml-auto">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="relative text-sm font-semibold text-[#14243A]/80 hover:text-[#E11D1C] transition-colors duration-200 group py-2"
+              >
+                {item.name}
+                <span className="absolute left-0 -bottom-0.5 w-0 h-[2px] bg-[#E11D1C] group-hover:w-full transition-all duration-300" />
+              </a>
             ))}
-            <a 
-              href={isHomePage ? '#contact' : '/#contact'} 
-              className="px-5 py-2 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 transition-colors"
+
+            <a
+              href={contactHref}
+              className="px-6 py-3 bg-[#E11D1C] text-white text-sm font-bold rounded-lg shadow-sm hover:bg-[#C90D16] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
               Contact Us
             </a>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <button 
-              className="md:hidden p-1 text-on-surface-variant hover:text-secondary" 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 rounded-lg text-[#14243A] hover:bg-[#14243A]/5 hover:text-[#E11D1C] transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X size={25} /> : <Menu size={25} />}
+          </button>
         </div>
-        
+
+        {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-background border-b border-outline-variant p-6 flex flex-col gap-4 shadow-lg">
-            {navItems.map(item => (
-              item.isRouter ? (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-on-surface-variant font-medium hover:text-secondary transition-colors py-1"
-                >
-                  {item.name}
-                </Link>
-              ) : (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-on-surface-variant font-medium hover:text-secondary transition-colors py-1"
-                >
-                  {item.name}
-                </a>
-              )
+          <div className="md:hidden bg-white border-t border-[#14243A]/10 shadow-xl px-6 py-6 flex flex-col gap-5">
+
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-[#14243A] font-semibold hover:text-[#E11D1C] transition-colors py-1"
+              >
+                {item.name}
+              </a>
             ))}
+
             <Link
               to="/terms"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-2 text-on-surface-variant font-medium hover:text-secondary transition-colors py-1"
+              className="flex items-center gap-2 text-[#14243A] font-semibold hover:text-[#E11D1C] transition-colors"
             >
-              <FileText className="w-4 h-4 text-amber-500" />
-              <span>Terms &amp; Conditions</span>
+              <FileText className="w-4 h-4 text-[#E11D1C]" />
+              Terms &amp; Conditions
             </Link>
-            <a 
-              href={isHomePage ? '#contact' : '/#contact'} 
+
+            <a
+              href={contactHref}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-full text-center hover:bg-emerald-700 transition-colors mt-2"
+              className="w-full px-5 py-3 bg-[#E11D1C] text-white font-bold rounded-lg text-center hover:bg-[#C90D16] transition-colors"
             >
               Contact Us
             </a>
@@ -151,4 +151,3 @@ export default function SafeSyncNavbar() {
     </header>
   );
 }
-
