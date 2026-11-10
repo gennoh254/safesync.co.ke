@@ -45,13 +45,15 @@ export default function SafeSyncNavbar() {
           </div>
 
           <Link
-            to="/terms"
-            className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
-          >
-            <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
-            <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
-              Terms &amp; Conditions
-            </span>
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
+                  <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
+                    Terms &amp; Conditions
+                  </span>
           </Link>
         </div>
       </div>
@@ -130,13 +132,16 @@ export default function SafeSyncNavbar() {
             ))}
 
             <Link
-              to="/terms"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-2 text-[#14243A] font-semibold hover:text-[#E11D1C] transition-colors"
-            >
-              <FileText className="w-4 h-4 text-[#E11D1C]" />
-              Terms &amp; Conditions
-            </Link>
+  to="/terms"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
+>
+  <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
+  <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
+    Terms &amp; Conditions
+  </span>
+</Link>
 
             <a
               href={contactHref}
