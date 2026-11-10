@@ -45,15 +45,13 @@ export default function SafeSyncNavbar() {
           </div>
 
           <Link
-                  to="/terms"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
-                >
-                  <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
-                  <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
-                    Terms &amp; Conditions
-                  </span>
+            to="/terms"
+            className="flex items-center gap-1.5 text-white/75 hover:text-white transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5 text-[#E11D1C]" />
+            <span className="underline underline-offset-2 decoration-white/30 hover:decoration-[#E11D1C]">
+              Terms &amp; Conditions
+            </span>
           </Link>
         </div>
       </div>
