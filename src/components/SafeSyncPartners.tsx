@@ -38,17 +38,17 @@ const partners = [
     image: "/assets/missioncare.jpg",
     alt: "mission care",
   },
-  // {
-  //   image: "/assets/missioncare.jpg",
-  //   alt: "sucos hospital",
-  // },
+  {
+    image: "/assets/alphat.jpeg",
+    alt: "alpha ambulance",
+  },
   {
     image: "/assets/succo.png",
     alt: "sucos hospital",
   },
   {
     image: "/assets/whitecrescent.jpg",
-    alt: "sucos hospital",
+    alt: "white crescent hospital",
   },
 ];
 
