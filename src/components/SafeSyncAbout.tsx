@@ -708,7 +708,7 @@ export default function SafeSyncAbout() {
 
             <motion.a
               variants={staggerItem}
-              href="/contact"
+              href="/#contact"
               whileHover={
                 prefersReducedMotion ? undefined : { y: -4, scale: 1.03 }
               }
