@@ -2,54 +2,19 @@
 import { motion, useReducedMotion } from "motion/react";
 
 const partners = [
-  {
-    image: "/assets/redcross.png",
-    alt: "Kenya Red Cross",
-  },
-  {
-    image: "/assets/council.png",
-    alt: "County Council",
-  },
-  {
-    image: "/assets/images3.png",
-    alt: "Fire and Rescue",
-  },
-  {
-    image: "/assets/stp1-logo.png",
-    alt: "St Paul's Hospital",
-  },
-  {
-    image: "/assets/lifecare-logio.png",
-    alt: "Lifecare Hospital",
-  },
-  {
-    image: "/assets/katani.png",
-    alt: "Katani Hospital",
-  },
-  {
-    image: "/assets/vitalseal.png",
-    alt: "Vital Seal",
-  },
-   {
-    image: "/assets/sinai.jpg",
-    alt: "Sinai Hospital",
-  },
-   {
-    image: "/assets/missioncare.jpg",
-    alt: "mission care",
-  },
-  {
-    image: "/assets/alphat.jpeg",
-    alt: "alpha ambulance",
-  },
-  {
-    image: "/assets/succo.png",
-    alt: "sucos hospital",
-  },
-  {
-    image: "/assets/whitecrescent.jpg",
-    alt: "white crescent hospital",
-  },
+  { image: "/assets/redcross.png", alt: "Kenya Red Cross" },
+  { image: "/assets/council.png", alt: "County Council" },
+  { image: "/assets/images3.png", alt: "Fire and Rescue" },
+  { image: "/assets/stp1-logo.png", alt: "St Paul's Hospital" },
+  { image: "/assets/lifecare-logio.png", alt: "Lifecare Hospital" },
+  { image: "/assets/katani.png", alt: "Katani Hospital" },
+  { image: "/assets/vitalseal.png", alt: "Vital Seal" },
+  { image: "/assets/sinai.jpg", alt: "Sinai Hospital" },
+  { image: "/assets/missioncare.jpg", alt: "Mission Care" },
+  { image: "/assets/alphat.jpeg", alt: "Alpha Ambulance" },
+  { image: "/assets/succo.png", alt: "Sucos Hospital" },
+  { image: "/assets/whitecrescent.jpg", alt: "White Crescent Hospital" },
+  { image: "/assets/wobs.jpeg", alt: "WOBS" },
 ];
 
 export default function SafeSyncPartners() {
@@ -72,11 +37,9 @@ export default function SafeSyncPartners() {
               Our Partners
             </h2>
 
-            {/* Red Accent */}
             <div className="mt-3 h-1 w-16 rounded-full bg-[#ED111C] sm:w-20" />
           </div>
 
-          {/* Horizontal Divider */}
           <div className="h-px flex-1 bg-[#0B1F3A]/25" />
         </motion.div>
 
@@ -117,35 +80,49 @@ export default function SafeSyncPartners() {
                 ease: "easeOut",
               }}
               className="
-                group flex min-h-[130px] items-center justify-center
+                group relative flex min-h-[140px]
+                items-center justify-center
                 border-b border-[#0B1F3A]/10
                 px-5 py-8
-                sm:min-h-[150px] sm:px-8 sm:py-10
-                md:min-h-[165px]
+                sm:min-h-[160px] sm:px-8 sm:py-10
+                md:min-h-[175px]
               "
             >
-              <div className="flex h-full w-full items-center justify-center">
-                <img
-                  src={partner.image}
-                  alt={partner.alt}
-                  loading="lazy"
-                  draggable={false}
-                  className="
-                    max-h-[65px]
-                    w-full
-                    max-w-[150px]
-                    object-contain
-                    opacity-100
-                    transition-transform
-                    duration-300
-                    ease-out
-                    group-hover:scale-105
-                    sm:max-h-[80px]
-                    sm:max-w-[175px]
-                    md:max-w-[190px]
-                  "
-                />
-              </div>
+              <motion.img
+                src={partner.image}
+                alt={partner.alt}
+                loading="lazy"
+                draggable={false}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        scale: 1.22,
+                        y: -8,
+                        filter:
+                          "drop-shadow(0px 8px 12px rgba(237,17,28,0.20))",
+                      }
+                }
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 18,
+                }}
+                className="
+                  relative z-10
+                  max-h-[75px]
+                  w-full
+                  max-w-[165px]
+                  object-contain
+                  opacity-100
+                  transition-opacity
+                  duration-300
+                  sm:max-h-[90px]
+                  sm:max-w-[185px]
+                  md:max-w-[200px]
+                  cursor-pointer
+                "
+              />
             </motion.div>
           ))}
         </div>
